@@ -5,19 +5,27 @@ from html import unescape
 import csv
 from natsort import natsorted # pip install natsort
 
-dir='C:\\Users\\ahale\\Documents\\Corcoran\\'
+dir='C:\\Users\\ahale\\GitHub\\corcoran-scraper\\'
 regionName = 'nyc'
 #regionName = 'westchester'
+#regionName = 'hudson-valley'
 #regionName = 'phoenix-scottsdale'
+#regionName = 'florida'
+#regionName = 'central-florida'
+#regionName = 'northwest-florida'
+#regionName = 'chicago'
+#regionName = 'denver'
+#regionName = 'reno-tahoe'
 
 # wget --restrict-file-names=nocontrol -O phoenix-scottsdale.html https://www.corcoran.com/phoenix-scottsdale-real-estate/agents?pageSize=36&page=200&append=true
 
-if False:
+if 0:
     with open(dir+regionName+'.html', 'r', encoding="UTF-8") as f:
         urls = re.findall(r'<a href="(/[a-z-]*/agents/.*?)"', f.read())
+#        print(urls)
         with open(dir+regionName+'-urls.txt', 'w', encoding="UTF-8") as urlFile:
             urlFile.write('\nhttps://www.corcoran.com'.join([""]+urls)[1:])
-    print('wget --no-clobber --tries=1 --wait=0.5 --restrict-file-names=nocontrol --input-file=../'+regionName+'-urls.txt')
+    print('mkdir '+regionName+' && cd '+regionName+'&& wget --no-clobber --tries=1 --wait=0.2 --restrict-file-names=nocontrol --input-file=../'+regionName+'-urls.txt && cd ..')
 else:
     filesList = natsorted(os.listdir(dir+regionName))
     print(filesList[0])
@@ -27,8 +35,12 @@ else:
     #        print(fileName)
             htmlText = f.read()
             names = re.findall(r'<h1 class="Heading__H1-sc-19hes1t-0 AEmcX">(.*?)</h1>', htmlText, flags=re.IGNORECASE)
-            emails = re.findall(r'<a href="mailto:(.*?.com)"', htmlText)
-            emails.remove('info@corcoran.com')
+            emails = re.findall(r'<a href="mailto:(.*?.[com,net])"', htmlText)
+            try:
+                emails.remove('info@corcoran.com')
+            except Exception:
+                print('no info@corcoran '+fileName)
+                print(emails)
             if len(emails) > 1 or not fileName.isdigit():
                 names += re.findall(r'<div class="PartnershipTeamMembers__AgentNameText-sc-1iiojea-3 dWZBDe">(.*?)</div>', htmlText)
     #            print(names, emails)
